@@ -1,21 +1,21 @@
-# Tests ML-DSA pour Aries Askar Python
+# ML-DSA Tests for Aries Askar Python
 
-Ce dépôt fournit une suite de tests d’intégration pour l’implémentation ML-DSA du wrapper Python d’[Aries Askar](https://github.com/Welhelha/askar). Il vérifie les variantes ML-DSA-44, ML-DSA-65 et ML-DSA-87 ainsi que la non-régression des signatures Ed25519 et P-256.
+This repository provides an integration test suite for the ML-DSA implementation in the [Aries Askar](https://github.com/Welhelha/askar) Python wrapper. It tests the ML-DSA-44, ML-DSA-65, and ML-DSA-87 variants, as well as regression coverage for Ed25519 and P-256 signatures.
 
-> Ce dépôt est un banc de tests, pas une bibliothèque Python ML-DSA autonome. Le code Aries Askar testé est récupéré et compilé par la configuration pytest.
+> This repository is a test harness, not a standalone Python ML-DSA library. The Aries Askar code under test is fetched and compiled when pytest runs.
 
-## Prérequis
+## Requirements
 
-- Python 3.10 ou ultérieur
+- Python 3.10 or later
 - Git
-- Rust et Cargo
-- Une chaîne de compilation compatible avec les dépendances Rust
+- Rust 1.94 or later and Cargo
+- A build toolchain compatible with the Rust dependencies
 
-Au premier lancement des tests, `tests/conftest.py` récupère une révision épinglée d’Aries Askar dans `tests/.cache/askar`, puis compile la bibliothèque avec la fonctionnalité `mldsa`. Git et Cargo doivent donc être accessibles; un accès réseau est requis pour récupérer le dépôt et les dépendances si ceux-ci ne sont pas déjà présents dans le cache.
+Each time a pytest session starts, `tests/conftest.py` fetches the pinned Aries Askar revision into `tests/.cache/askar` (cloning the repository if needed), checks out that revision, and runs a build with the `mldsa` feature enabled. Git and Cargo must be available, and network access is required for the fetch. Cargo may also need network access if dependencies are not already cached.
 
-## Installation et lancement
+## Installation and Usage
 
-Depuis la racine du dépôt, créez un environnement virtuel et installez pytest :
+From the repository root, create a virtual environment and install pytest:
 
 ```bash
 python3 -m venv .venv
@@ -23,28 +23,29 @@ source .venv/bin/activate
 python -m pip install pytest
 ```
 
-Lancez ensuite la suite complète :
+Run the full test suite:
 
 ```bash
 python -m pytest -q
 ```
 
-Pour voir les cas de test détaillés :
+To see the individual test cases:
 
 ```bash
 python -m pytest -v tests/test_mldsa.py
 ```
 
-La configuration de test compile le wrapper Rust au lancement. La première exécution peut donc prendre davantage de temps que les suivantes.
+The test setup builds the Rust wrapper when pytest starts. The first run may take longer than subsequent runs because Cargo can reuse previously built artifacts.
 
-## Couverture
+## Coverage
 
-Les tests vérifient notamment :
+The tests cover, among other things:
 
-- les tailles et identifiants de clés et signatures des trois variantes ML-DSA;
-- la génération à partir d’une seed et la génération aléatoire;
-- la signature et la vérification de messages de différentes tailles;
-- le rejet des entrées invalides et des signatures altérées;
-- les imports/exports de clés brutes et JWK AKP;
-- les opérations concurrentes et la persistance SQLite;
-- la non-régression Ed25519/P-256.
+- key and signature sizes, `KeyAlg` identifiers, and JWK `alg` values for all three ML-DSA variants;
+- deterministic key generation from a seed and random key generation;
+- signing and verifying messages of different sizes;
+- rejection of invalid inputs and modified signatures;
+- key import and export using `Key.from_public_bytes`, `Key.from_secret_bytes`, and `Key.from_jwk`; for ML-DSA, the exported secret is a 32-byte seed;
+- AKP JWKs using `kty="AKP"`, the `ML-DSA-44`, `ML-DSA-65`, or `ML-DSA-87` `alg` value, and `pub` and (for private JWKs) `priv` fields;
+- thread-based parallel operations and SQLite persistence;
+- regression coverage for Ed25519 and P-256.
