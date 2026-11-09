@@ -1,11 +1,10 @@
 /target/
 /node_modules/
 .venv/
-tests/__pycache__/
-tests/.cache/
 venv/
 __pycache__/
 .pytest_cache/
+/tests/.cache/
 *.py[cod]
 *$py.class
 build/
