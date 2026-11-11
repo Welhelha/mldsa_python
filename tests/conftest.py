@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 ASKAR_REPO_URL = "https://github.com/Welhelha/askar.git"
-ASKAR_REF = "062874a5d5abe53bddbf562c8c556ef11d5e6e35"
+ASKAR_REF = "1b20d4c752f41c7c96b5baee48fa317befb5dc43"
 
 CACHE_DIR = Path(__file__).resolve().parent / ".cache"
 ASKAR_ROOT = CACHE_DIR / "askar"
